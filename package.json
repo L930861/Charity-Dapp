@@ -1,0 +1,40 @@
+{
+  "name": "clearcause-charity-dapp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "compile": "node scripts/compile.mjs",
+    "chain": "node scripts/chain.mjs",
+    "deploy": "node scripts/deploy.mjs",
+    "seed": "node scripts/seed.mjs",
+    "demo": "node scripts/demo.mjs",
+    "dev": "vite --host 127.0.0.1",
+    "server": "node server/index.mjs",
+    "build": "vite build",
+    "start": "node server/index.mjs",
+    "test": "node --test --test-concurrency=1 tests/*.test.mjs",
+    "test:e2e": "node tests/browser.mjs",
+    "local": "node scripts/local-tools.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "ethers": "^6.17.0",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.2.1",
+    "helmet": "^8.1.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.1.0",
+    "vite": "^7.2.0",
+    "ganache": "7.9.2",
+    "solc": "0.8.30",
+    "@playwright/test": "^1.56.0",
+    "supertest": "^7.1.4"
+  }
+}

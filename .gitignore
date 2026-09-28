@@ -9,3 +9,7 @@ work/
 *.log
 test-results/
 .DS_Store
+# Submission materials stay in the local deliverable package.
+docs/
+evidence/
+scripts/generate_report.py
