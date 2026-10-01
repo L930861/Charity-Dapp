@@ -60,28 +60,28 @@ React UI --- read requests ---> Express API --- JSON-RPC ---> Ethereum EVM
 
 The contract is the authority for funds and campaign terms. The backend serves the compiled UI, checks the deployment, reads consistent block snapshots for campaign lists, formats wei as decimal strings, and decodes/filter events. There is no separate database because this prototype does not need off-chain mutable records. Requests are read-only; authorization for state changes is enforced on chain using `msg.sender`.
 
-| Path | Purpose |
-|---|---|
-| `contracts/CharityFund.sol` | Fundraising, withdrawal and refund rules |
-| `src/` | Responsive React interface and wallet integration |
-| `server/` | Express API and chain query service |
-| `scripts/` | Compilation, local network, deployment and local tools |
-| `tests/` | Contract, adversarial receiver, API and browser checks |
-| `artifacts/CharityFund.json` | Compiler version, ABI and deployable bytecode |
-| `deployments/` | Runtime manifests, generated per network |
-| `evidence/` | Test results, screenshots, gas measurements and audit output |
-| `docs/` | Report, recording guide and requirements checklist |
+| Path                         | Purpose                                                      |
+| ---------------------------- | ------------------------------------------------------------ |
+| `contracts/CharityFund.sol`  | Fundraising, withdrawal and refund rules                     |
+| `src/`                       | Responsive React interface and wallet integration            |
+| `server/`                    | Express API and chain query service                          |
+| `scripts/`                   | Compilation, local network, deployment and local tools       |
+| `tests/`                     | Contract, adversarial receiver, API and browser checks       |
+| `artifacts/CharityFund.json` | Compiler version, ABI and deployable bytecode                |
+| `deployments/`               | Runtime manifests, generated per network                     |
+| `evidence/`                  | Test results, screenshots, gas measurements and audit output |
+| `docs/`                      | Report, recording guide and requirements checklist           |
 
 ## API
 
-| GET endpoint | Response |
-|---|---|
-| `/api/health` | RPC network and deployed-code availability |
-| `/api/config` | Public chain ID, address, ABI and explorer configuration |
-| `/api/artifact` | Public ABI and bytecode for wallet-assisted deployment |
-| `/api/campaigns?offset=0&limit=20` | Newest first, maximum 50 per page |
-| `/api/campaigns/:id` | Campaign fields and derived status |
-| `/api/history?account=0x...` | Matching on-chain events and confirmation counts |
+| GET endpoint                       | Response                                                 |
+| ---------------------------------- | -------------------------------------------------------- |
+| `/api/health`                      | RPC network and deployed-code availability               |
+| `/api/config`                      | Public chain ID, address, ABI and explorer configuration |
+| `/api/artifact`                    | Public ABI and bytecode for wallet-assisted deployment   |
+| `/api/campaigns?offset=0&limit=20` | Newest first, maximum 50 per page                        |
+| `/api/campaigns/:id`               | Campaign fields and derived status                       |
+| `/api/history?account=0x...`       | Matching on-chain events and confirmation counts         |
 
 History is deliberately bounded to at most 100 returned events from the latest 10,000 blocks since deployment. RPC log requests use 500-block chunks. The response and UI disclose the range. This is recent activity, not an archival indexer. Block confirmations are not finality guarantees. Rate limit: 180 API requests/minute/IP. RPC errors are returned without stack traces. For a reverse proxy, configure Express's proxy trust explicitly for that deployment; do not broadly trust arbitrary forwarded headers.
 
@@ -127,7 +127,22 @@ For users who choose a dedicated test-only deployment key: put `DEPLOYER_PRIVATE
 
 ## Optional public hosting
 
-`Dockerfile` builds the web UI and contract artifact, then installs only runtime dependencies. Mount a confirmed deployment manifest at `/app/deployments/11155111.json`, set `CHAIN_ID=11155111`, `RPC_URL`, `HOST=0.0.0.0`, and `PORT=3001`. Put the service behind HTTPS. The API and frontend share one origin. No hosting account or paid resources have been provisioned. Hosting is optional in the supplied assignment brief.
+`render.yaml` defines a Render Docker web service with a health check. The deployed frontend and API share one HTTPS origin; MetaMask signs transactions in the visitor's browser and the Render service never receives wallet private keys.
+
+Before creating the Render service, deploy `CharityFund` to Sepolia and record its address, deployment block, transaction hash and time. In Render, provide these environment variables when prompted:
+
+| Variable             | Value                                       |
+| -------------------- | ------------------------------------------- |
+| `CHAIN_ID`           | `11155111`                                  |
+| `RPC_URL`            | A Sepolia HTTPS JSON-RPC endpoint           |
+| `CONTRACT_ADDRESS`   | Confirmed Sepolia contract address          |
+| `DEPLOYMENT_BLOCK`   | Block containing the deployment transaction |
+| `DEPLOYMENT_TX_HASH` | Deployment transaction hash                 |
+| `DEPLOYED_AT`        | ISO timestamp for the confirmed deployment  |
+
+`CONTRACT_ADDRESS` and `DEPLOYMENT_BLOCK` replace the local deployment-manifest file on Render. The backend validates the network and checks that bytecode exists at the address before listening. Render supplies `PORT`; the service binds to `0.0.0.0`. The included public RPC default is convenient for coursework, but a dedicated provider is more reliable if it becomes rate-limited.
+
+Connect the GitHub repository in Render and choose **New Blueprint Instance**, or create a Docker Web Service manually. A free service can sleep after inactivity, so open it before a presentation and wait for the health endpoint to recover. The blockchain state remains on Sepolia when the Render container restarts.
 
 ## Security and limitations
 
@@ -148,3 +163,4 @@ Read `docs/SUBMISSION_CHECKLIST.md`. The report PDF has eight pages. A Chinese r
 - [MetaMask account management](https://docs.metamask.io/metamask-connect/evm/guides/manage-user-accounts/)
 - [Ethereum networks](https://ethereum.org/developers/docs/networks/)
 - [Express security practices](https://expressjs.com/en/advanced/best-practice-security/)
+

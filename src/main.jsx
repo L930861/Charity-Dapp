@@ -186,6 +186,30 @@ function App() {
         } catch (err) {
           setError(explain(err));
         }
+      } else if (e.code === 4902 && id === 11155111) {
+        try {
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [
+              {
+                chainId: "0xaa36a7",
+                chainName: "Sepolia",
+                nativeCurrency: {
+                  name: "Sepolia Ether",
+                  symbol: "ETH",
+                  decimals: 18,
+                },
+                rpcUrls: ["https://ethereum-sepolia-rpc.publicnode.com"],
+                blockExplorerUrls: ["https://sepolia.etherscan.io"],
+              },
+            ],
+          });
+          setChain(
+            Number(await window.ethereum.request({ method: "eth_chainId" })),
+          );
+        } catch (err) {
+          setError(explain(err));
+        }
       } else setError(explain(e));
     }
   }
@@ -1028,3 +1052,4 @@ function App() {
   );
 }
 createRoot(document.getElementById("root")).render(<App />);
+

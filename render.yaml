@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: clearcause-charity-dapp
+    runtime: docker
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: CHAIN_ID
+        value: "11155111"
+      - key: RPC_URL
+        value: https://ethereum-sepolia-rpc.publicnode.com
+      - key: CONTRACT_ADDRESS
+        sync: false
+      - key: DEPLOYMENT_BLOCK
+        sync: false
+      - key: DEPLOYMENT_TX_HASH
+        sync: false
+      - key: DEPLOYED_AT
+        sync: false
+
