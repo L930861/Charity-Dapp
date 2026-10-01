@@ -5,6 +5,7 @@ dist/
 !.env.example
 deployments/*.json
 !deployments/.gitkeep
+!deployments/11155111.json
 work/
 *.log
 test-results/

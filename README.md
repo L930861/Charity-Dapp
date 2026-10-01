@@ -2,7 +2,11 @@
 
 SC6113 financial DApp coursework: transparent, goal-based charitable fundraising with Solidity, React, Node.js and MetaMask. Campaigns and their descriptions live on chain. The Express backend queries campaign state and normalizes transaction events; it cannot sign transactions or move funds.
 
-**Verified:** local EVM deployment, contract/API tests and browser integration using an EIP-1193 test adapter. **Not yet verified:** a real MetaMask extension signing session, Sepolia deployment or public hosting. Sample campaigns are fictional. Test ETH only.
+**Verified:** local EVM deployment, 31 contract/API tests, 13 browser integration checks, a MetaMask-signed Sepolia deployment and public Render hosting. Sample campaigns are fictional. Test ETH only.
+
+**Live application:** https://clearcause-charity-dapp.onrender.com<br>
+**Sepolia contract:** [`0x9590b666c1257599e58cb32b4f638195afa77119`](https://sepolia.etherscan.io/address/0x9590b666c1257599e58cb32b4f638195afa77119)<br>
+**Deployment transaction:** [`0xc68055fa...75b7430`](https://sepolia.etherscan.io/tx/0xc68055fabdd67c4a435ac7e77f44290f5ba210005163e06e2165e7c1575b7430), block `11821189`
 
 The public repository contains source code and running instructions. The report, recording guide and collected evidence are supplied separately in the local submission package; references to `docs/` and saved `evidence/` below refer to that package. Running the tests generates fresh evidence locally.
 
@@ -109,7 +113,7 @@ Clean installation was verified on Windows. The lockfile explicitly marks Ganach
 
 ## Sepolia deployment
 
-The coursework document recommends Sepolia, but does not make it an explicit mandatory deliverable. The package does **not** contain a claimed Sepolia address or fabricated public-chain evidence.
+The compiled `CharityFund` artifact was deployed through MetaMask to Sepolia on 1 October 2026. The confirmed manifest is stored in `deployments/11155111.json`. An independent JSON-RPC `eth_getCode` check returned 3,998 bytes of runtime code at the address above. This verifies deployment existence; it is not an audit or a claim of mainnet readiness.
 
 ### Preferred method using MetaMask
 
@@ -125,11 +129,11 @@ The coursework document recommends Sepolia, but does not make it an explicit man
 
 For users who choose a dedicated test-only deployment key: put `DEPLOYER_PRIVATE_KEY` in untracked `.env`, set RPC/chain ID, then run `npm run compile` and `npm run deploy`. Never share the key, use a mainnet wallet key, or commit this file. The wallet method avoids this key handling entirely.
 
-## Optional public hosting
+## Public hosting
 
-`render.yaml` defines a Render Docker web service with a health check. The deployed frontend and API share one HTTPS origin; MetaMask signs transactions in the visitor's browser and the Render service never receives wallet private keys.
+`render.yaml` defines the live Render Docker web service with a health check. The deployed frontend and API share one HTTPS origin; MetaMask signs transactions in the visitor's browser and the Render service never receives wallet private keys. The production service is live at https://clearcause-charity-dapp.onrender.com and reports chain ID `11155111`.
 
-Before creating the Render service, deploy `CharityFund` to Sepolia and record its address, deployment block, transaction hash and time. In Render, provide these environment variables when prompted:
+To reproduce the deployment in another Render workspace, provide these environment variables when prompted:
 
 | Variable             | Value                                       |
 | -------------------- | ------------------------------------------- |
@@ -142,7 +146,7 @@ Before creating the Render service, deploy `CharityFund` to Sepolia and record i
 
 `CONTRACT_ADDRESS` and `DEPLOYMENT_BLOCK` replace the local deployment-manifest file on Render. The backend validates the network and checks that bytecode exists at the address before listening. Render supplies `PORT`; the service binds to `0.0.0.0`. The included public RPC default is convenient for coursework, but a dedicated provider is more reliable if it becomes rate-limited.
 
-Connect the GitHub repository in Render and choose **New Blueprint Instance**, or create a Docker Web Service manually. A free service can sleep after inactivity, so open it before a presentation and wait for the health endpoint to recover. The blockchain state remains on Sepolia when the Render container restarts.
+Connect the GitHub repository in Render and choose **New Blueprint Instance**, or create a Docker Web Service manually. The current service uses Render's free plan and can sleep after inactivity, so open it before a presentation and allow up to about a minute for a cold start. The blockchain state remains on Sepolia when the Render container restarts.
 
 ## Security and limitations
 
@@ -150,7 +154,7 @@ The contract uses a reentrancy lock plus checks-effects-interactions; failed ext
 
 The September 2026 audit records 27 advisories in **Ganache's bundled development dependency tree**, including four critical advisories. These are not represented as fixed or as a clean audit. Ganache is local-only, bound to loopback, and excluded from the runtime Docker stage. `npm audit --omit=dev` can still enumerate these bundled lockfile entries. This is a development-tool limitation; do not expose the local chain, use real funds, or treat this coursework as production-audited software. Review `evidence/dependency-audit.json` and `docs/TESTING.md`.
 
-Campaigns may contain false claims. Blockchain cannot verify off-chain impact or constrain use after withdrawal. Public descriptions and addresses have privacy implications. Long on-chain descriptions cost gas. Centralized frontend/RPC availability, the bounded history window, no independent security audit, and no public-testnet measurement limit the prototype.
+Campaigns may contain false claims. Blockchain cannot verify off-chain impact or constrain use after withdrawal. Public descriptions and addresses have privacy implications. Long on-chain descriptions cost gas. Centralized frontend/RPC availability, Render free-instance sleep, the bounded history window, limited public-testnet measurement and no independent security audit limit the prototype.
 
 ## Submission
 
