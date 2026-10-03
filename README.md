@@ -1,8 +1,8 @@
 # ClearCause Charity DApp
 
-SC6113 financial DApp coursework: transparent, goal-based charitable fundraising with Solidity, React, Node.js and MetaMask. Campaigns and their descriptions live on chain. The Express backend queries campaign state and normalizes transaction events; it cannot sign transactions or move funds.
+SC6113 financial DApp coursework: transparent, goal-based charitable fundraising with Solidity, React, Python Flask and MetaMask. Campaigns and their descriptions live on chain. The Flask backend queries campaign state and normalizes transaction events; it cannot sign transactions or move funds.
 
-**Verified:** local EVM deployment, 31 contract/API tests, 13 browser integration checks, a MetaMask-signed Sepolia deployment and public Render hosting. Sample campaigns are fictional. Test ETH only.
+**Verified:** local EVM deployment, 34 contract/API tests across Node and Flask, 13 browser integration checks, a MetaMask-signed Sepolia deployment and public Render hosting. Sample campaigns are fictional. Test ETH only.
 
 **Live application:** https://clearcause-charity-dapp.onrender.com<br>
 **Sepolia contract:** [`0x9590b666c1257599e58cb32b4f638195afa77119`](https://sepolia.etherscan.io/address/0x9590b666c1257599e58cb32b4f638195afa77119)<br>
@@ -55,7 +55,7 @@ To demonstrate both outcomes with your own wallet: create one campaign with a 0.
 ## Architecture
 
 ```text
-React UI --- read requests ---> Express API --- JSON-RPC ---> Ethereum EVM
+React UI --- read requests ---> Flask API --- JSON-RPC ---> Ethereum EVM
    |                                                       ^
    +--- BrowserProvider ---> MetaMask --- signed transaction+
                               |
@@ -68,7 +68,8 @@ The contract is the authority for funds and campaign terms. The backend serves t
 | ---------------------------- | ------------------------------------------------------------ |
 | `contracts/CharityFund.sol`  | Fundraising, withdrawal and refund rules                     |
 | `src/`                       | Responsive React interface and wallet integration            |
-| `server/`                    | Express API and chain query service                          |
+| `app.py`                     | Flask API, chain query service and production entry point    |
+| `server/`                    | Previous Express implementation retained for comparison      |
 | `scripts/`                   | Compilation, local network, deployment and local tools       |
 | `tests/`                     | Contract, adversarial receiver, API and browser checks       |
 | `artifacts/CharityFund.json` | Compiler version, ABI and deployable bytecode                |
@@ -87,7 +88,7 @@ The contract is the authority for funds and campaign terms. The backend serves t
 | `/api/campaigns/:id`               | Campaign fields and derived status                       |
 | `/api/history?account=0x...`       | Matching on-chain events and confirmation counts         |
 
-History is deliberately bounded to at most 100 returned events from the latest 10,000 blocks since deployment. RPC log requests use 500-block chunks. The response and UI disclose the range. This is recent activity, not an archival indexer. Block confirmations are not finality guarantees. Rate limit: 180 API requests/minute/IP. RPC errors are returned without stack traces. For a reverse proxy, configure Express's proxy trust explicitly for that deployment; do not broadly trust arbitrary forwarded headers.
+History is deliberately bounded to at most 100 returned events from the latest 10,000 blocks since deployment. RPC log requests use 500-block chunks. The response and UI disclose the range. This is recent activity, not an archival indexer. Block confirmations are not finality guarantees. RPC errors are returned without stack traces.
 
 ## Development and testing
 
@@ -95,6 +96,8 @@ History is deliberately bounded to at most 100 returned events from the latest 1
 npm run compile
 npm test
 npm run build
+python -m pip install -r requirements.txt
+python -m unittest tests.test_flask_app -v
 ```
 
 For live frontend development run `npm run dev` in another terminal while the backend and local chain are running. Vite proxies `/api` to port 3001.
@@ -122,7 +125,7 @@ The compiled `CharityFund` artifact was deployed through MetaMask to Sepolia on 
 3. Switch to Sepolia in the helper, click **Deploy CharityFund**, inspect the network and gas in MetaMask, then sign. Wait for confirmation.
 4. Download the generated manifest and save it as `deployments/11155111.json` in this project.
 5. Copy `.env.example` to `.env`, set `CHAIN_ID=11155111` and `RPC_URL` to your Sepolia HTTPS JSON-RPC endpoint. Do not place an RPC credential in browser code or commit `.env`.
-6. Stop the local demo, then run `npm start`. Backend startup verifies the configured network and code address. Create new Sepolia campaigns and test them with very small amounts of test ETH.
+6. Stop the local demo, install `requirements.txt`, then run `python app.py`. Backend startup verifies the configured network and code address through `/api/health`. Create new Sepolia campaigns and test them with very small amounts of test ETH.
 7. Capture the contract address, deployment receipt, donation receipt, wallet approval and explorer records. Add them to the report only after verification.
 
 ### Optional CLI deployment
@@ -131,7 +134,7 @@ For users who choose a dedicated test-only deployment key: put `DEPLOYER_PRIVATE
 
 ## Public hosting
 
-`render.yaml` defines the live Render Docker web service with a health check. The deployed frontend and API share one HTTPS origin; MetaMask signs transactions in the visitor's browser and the Render service never receives wallet private keys. The production service is live at https://clearcause-charity-dapp.onrender.com and reports chain ID `11155111`.
+`render.yaml` defines the live Render Docker web service with a health check. A Node build stage compiles the React interface, and Gunicorn runs the Python Flask application in the final container. The deployed frontend and API share one HTTPS origin; MetaMask signs transactions in the visitor's browser and the Render service never receives wallet private keys. The production service is live at https://clearcause-charity-dapp.onrender.com and reports chain ID `11155111`.
 
 To reproduce the deployment in another Render workspace, provide these environment variables when prompted:
 
@@ -166,5 +169,4 @@ Read `docs/SUBMISSION_CHECKLIST.md`. The report PDF has eight pages. A Chinese r
 - [ethers v6 documentation](https://docs.ethers.org/v6/)
 - [MetaMask account management](https://docs.metamask.io/metamask-connect/evm/guides/manage-user-accounts/)
 - [Ethereum networks](https://ethereum.org/developers/docs/networks/)
-- [Express security practices](https://expressjs.com/en/advanced/best-practice-security/)
-
+- [Express security practices](https://expressjs.com/en/advanced/best-practice-security/)\n
