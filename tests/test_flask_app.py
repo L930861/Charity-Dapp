@@ -36,6 +36,7 @@ class FlaskApiTests(unittest.TestCase):
         response = self.client.get("/api/campaigns?limit=100")
         self.assertEqual(response.status_code, 400)
         self.assertIn("Content-Security-Policy", response.headers)
+        self.assertEqual(response.headers["X-ClearCause-Backend"], "Flask")
         self.assertEqual(self.client.get("/api/campaigns/no").status_code, 400)
         self.assertEqual(self.client.get("/api/campaigns/99").status_code, 404)
         self.assertEqual(self.client.get("/api/history?account=no").status_code, 400)
