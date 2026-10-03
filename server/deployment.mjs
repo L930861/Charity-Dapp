@@ -30,4 +30,4 @@ export function loadDeployment(env = process.env, readFile = fs.readFileSync) {
     throw new Error("DEPLOYMENT_BLOCK must be a non-negative integer.");
   }
   return deployment;
-}\n
+}

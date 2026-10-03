@@ -8,7 +8,7 @@ SC6113 financial DApp coursework: transparent, goal-based charitable fundraising
 **Sepolia contract:** [`0x9590b666c1257599e58cb32b4f638195afa77119`](https://sepolia.etherscan.io/address/0x9590b666c1257599e58cb32b4f638195afa77119)<br>
 **Deployment transaction:** [`0xc68055fa...75b7430`](https://sepolia.etherscan.io/tx/0xc68055fabdd67c4a435ac7e77f44290f5ba210005163e06e2165e7c1575b7430), block `11821189`
 
-The public repository contains source code and running instructions. The report, recording guide and collected evidence are supplied separately in the local submission package; references to `docs/` and saved `evidence/` below refer to that package. Running the tests generates fresh evidence locally.
+The public repository contains source code and running instructions. The report and collected evidence are supplied separately in the local submission package; references to `docs/` and saved `evidence/` below refer to that package. Running the tests generates fresh evidence locally.
 
 ## Quick start on Windows
 
@@ -75,7 +75,7 @@ The contract is the authority for funds and campaign terms. The backend serves t
 | `artifacts/CharityFund.json` | Compiler version, ABI and deployable bytecode                |
 | `deployments/`               | Runtime manifests, generated per network                     |
 | `evidence/`                  | Test results, screenshots, gas measurements and audit output |
-| `docs/`                      | Report, recording guide and requirements checklist           |
+| `docs/`                      | Report, testing notes and requirements checklist              |
 
 ## API
 
@@ -153,7 +153,7 @@ Connect the GitHub repository in Render and choose **New Blueprint Instance**, o
 
 ## Security and limitations
 
-The contract uses a reentrancy lock plus checks-effects-interactions; failed external calls revert all prior changes. Pull refunds avoid unbounded donor loops. Solidity 0.8 checked arithmetic and integer wei accounting avoid floating-point balance errors. React escapes campaign text; the API validates parameters, sets Helmet headers and rate-limits calls.
+The contract uses a reentrancy lock plus checks-effects-interactions; failed external calls revert all prior changes. Pull refunds avoid unbounded donor loops. Solidity 0.8 checked arithmetic and integer wei accounting avoid floating-point balance errors. React escapes campaign text; the Flask API validates and bounds parameters, omits stack traces from responses, and sets security headers centrally.
 
 The September 2026 audit records 27 advisories in **Ganache's bundled development dependency tree**, including four critical advisories. These are not represented as fixed or as a clean audit. Ganache is local-only, bound to loopback, and excluded from the runtime Docker stage. `npm audit --omit=dev` can still enumerate these bundled lockfile entries. This is a development-tool limitation; do not expose the local chain, use real funds, or treat this coursework as production-audited software. Review `evidence/dependency-audit.json` and `docs/TESTING.md`.
 
@@ -161,7 +161,7 @@ Campaigns may contain false claims. Blockchain cannot verify off-chain impact or
 
 ## Submission
 
-Read `docs/SUBMISSION_CHECKLIST.md`. The report PDF has eight pages. A Chinese recording guide and English timed narration replace the video, which the student records. Original screenshots are included. Review the report, add course-required identity details if necessary, and record a genuine MetaMask session before submission. Do not claim that automated wallet-adapter evidence is an extension approval screenshot.
+Read `docs/SUBMISSION_CHECKLIST.md`. The report PDF has eight pages and original screenshots are included. The LMS submission consists of the Render link in the text field and `SC6113_Required_Files.zip` as the attachment. Add course-required identity details in the LMS if necessary.
 
 ## References
 
@@ -169,4 +169,4 @@ Read `docs/SUBMISSION_CHECKLIST.md`. The report PDF has eight pages. A Chinese r
 - [ethers v6 documentation](https://docs.ethers.org/v6/)
 - [MetaMask account management](https://docs.metamask.io/metamask-connect/evm/guides/manage-user-accounts/)
 - [Ethereum networks](https://ethereum.org/developers/docs/networks/)
-- [Express security practices](https://expressjs.com/en/advanced/best-practice-security/)\n
+- [Flask production deployment](https://flask.palletsprojects.com/en/stable/deploying/)

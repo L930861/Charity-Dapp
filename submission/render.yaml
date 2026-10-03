@@ -19,4 +19,4 @@ services:
       - key: DEPLOYMENT_TX_HASH
         sync: false
       - key: DEPLOYED_AT
-        sync: false\n
+        sync: false

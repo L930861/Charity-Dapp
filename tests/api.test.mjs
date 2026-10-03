@@ -87,4 +87,4 @@ test("Deployment manifests must match the configured chain", () => {
       }),
     ),
   );
-});\n
+});

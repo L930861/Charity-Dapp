@@ -1028,8 +1028,8 @@ function App() {
               Save the manifest as <code>deployments/11155111.json</code>. Set{" "}
               <code>CHAIN_ID=11155111</code> and your Sepolia{" "}
               <code>RPC_URL</code> in <code>.env</code>, then restart the
-              backend. See README for details. No Sepolia deployment is claimed
-              until a confirmed manifest exists.
+              backend. See README for details. The included deployment manifest
+              records the confirmed Sepolia contract.
             </p>
           </section>
         )}
@@ -1051,4 +1051,5 @@ function App() {
     </>
   );
 }
-createRoot(document.getElementById("root")).render(<App />);\n
+createRoot(document.getElementById("root")).render(<App />);
+
